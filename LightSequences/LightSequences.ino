@@ -1,11 +1,12 @@
 //lights setup
 #include <FastLED.h>
-#define NUM_LEDS 200
+#define START_LED 200
+#define NUM_LEDS 300
 #define DATA_PIN 12
 #define CLOCK_PIN 11
-#define NUM_LEDS_FRONT_LEFT 50
-#define NUM_LEDS_FRONT_RIGHT 50
-#define NUM_LEDS_DRIVE 100
+#define NUM_LEDS_FRONT_LEFT 25
+#define NUM_LEDS_FRONT_RIGHT 25
+#define NUM_LEDS_DRIVE 50
 #define CHIPSET APA102
 CRGB leds[NUM_LEDS];
 CRGB allianceColor = CRGB::Blue;
@@ -25,7 +26,8 @@ CRGB notBlindingWhite = CRGB(128,128,128);
 #define CLIMB 11
 
 //test settings
-byte mode = TELEOP_DISABLED;
+byte mode = AUTO_ENABLED;
+int z = 1;
 
 void setup() {
   FastLED.addLeds<CHIPSET, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
@@ -35,7 +37,7 @@ void teleopDisabled() {
   //STILL
   
   //front: alternating alliance color and white
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT+NUM_LEDS_FRONT_RIGHT-1; x+=2) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT+NUM_LEDS_FRONT_RIGHT-1; x+=2) {
     leds[x] = allianceColor;
     leds[x+1] = notBlindingWhite;
   }
@@ -157,13 +159,13 @@ void eStop() {
   //MOVING
   
   //robot: alternating red and orange, 0.5s each (ex. red, red, red, red; orange, orange, orange, orange)
-  for (int x=0; x<NUM_LEDS; x++) {
+  for (int x=START_LED; x<NUM_LEDS; x++) {
     leds[x] = CRGB::Red;
   }
   FastLED.show();
   delay(500);
-  for (int x=0; x<NUM_LEDS; x++) {
-    leds[x] = CRGB::Orange;
+  for (int x=START_LED; x<NUM_LEDS; x++) {
+    leds[x] = CRGB(255,64,0);
   }
   FastLED.show();
   delay(500);
@@ -174,17 +176,17 @@ void disconnected() {
   
   //robot: 3 light chase up, across, and down (ex. red, white, blue, off, off, red, white, blue)
   int lightSpeed = 75;
-  for (int x=0; x<NUM_LEDS-5; x+=5) {
+  for (int x=START_LED; x<NUM_LEDS-5; x+=5) {
     leds[x] = CRGB::Red;
-    leds[x+1] = notBlindingWhite;
+    leds[x+1] = CRGB::White;
     leds[x+2] = CRGB::Blue;
     leds[x+3] = CRGB::Black;
     leds[x+4] = CRGB::Black;
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS-5; x+=5) {
-    leds[x] = notBlindingWhite;
+  for (int x=START_LED; x<NUM_LEDS-5; x+=5) {
+    leds[x] = CRGB::White;
     leds[x+1] = CRGB::Blue;
     leds[x+2] = CRGB::Black;
     leds[x+3] = CRGB::Black;
@@ -192,28 +194,28 @@ void disconnected() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS-5; x+=5) {
+  for (int x=START_LED; x<NUM_LEDS-5; x+=5) {
     leds[x] = CRGB::Blue;
     leds[x+1] = CRGB::Black;
     leds[x+2] = CRGB::Black;
     leds[x+3] = CRGB::Red;
-    leds[x+4] = notBlindingWhite;
+    leds[x+4] = CRGB::White;
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS-5; x+=5) {
+  for (int x=START_LED; x<NUM_LEDS-5; x+=5) {
     leds[x] = CRGB::Black;
     leds[x+1] = CRGB::Black;
     leds[x+2] = CRGB::Red;
-    leds[x+3] = notBlindingWhite;
+    leds[x+3] = CRGB::White;
     leds[x+4] = CRGB::Blue;
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS-5; x+=5) {
+  for (int x=START_LED; x<NUM_LEDS-5; x+=5) {
     leds[x] = CRGB::Black;
     leds[x+1] = CRGB::Red;
-    leds[x+2] = notBlindingWhite;
+    leds[x+2] = CRGB::White;
     leds[x+3] = CRGB::Blue;
     leds[x+4] = CRGB::Black;
   }
@@ -277,13 +279,13 @@ void climb() {
   //MOVING
   
   //drivetrain: alliance color
-  for (int x=NUM_LEDS_FRONT_LEFT+NUM_LEDS_FRONT_RIGHT; x<NUM_LEDS; x++) {
+  for (int x=START_LED+NUM_LEDS_FRONT_LEFT+NUM_LEDS_FRONT_RIGHT; x<NUM_LEDS; x++) {
     leds[x] = allianceColor;
   }
   
   //front: 3 light chase alternating up sides (ex. left: blue, white, blue, off, off, off; right: off, off, off, blue, white, blue)
   int lightSpeed = 75;
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[NUM_LEDS_FRONT_LEFT+x+3] = allianceColor;
     leds[x+1] = leds[NUM_LEDS_FRONT_LEFT+x+4] = notBlindingWhite;
     leds[x+2] = leds[NUM_LEDS_FRONT_LEFT+x+5] = allianceColor;
@@ -291,7 +293,7 @@ void climb() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[NUM_LEDS_FRONT_LEFT+x+3] = notBlindingWhite;
     leds[x+1] = leds[NUM_LEDS_FRONT_LEFT+x+4] = allianceColor;
     leds[x+2] = leds[x+3] = leds[x+4] = leds[NUM_LEDS_FRONT_LEFT+x+5] = leds[NUM_LEDS_FRONT_LEFT+x] = leds[NUM_LEDS_FRONT_LEFT+x+1] = CRGB::Black;
@@ -299,7 +301,7 @@ void climb() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[NUM_LEDS_FRONT_LEFT+x+3] = allianceColor;
     leds[x+1] = leds[x+2] = leds[x+3] = leds[NUM_LEDS_FRONT_LEFT+x+4] = leds[NUM_LEDS_FRONT_LEFT+x+5] = leds[NUM_LEDS_FRONT_LEFT+x] = CRGB::Black;
     leds[x+4] = leds[NUM_LEDS_FRONT_LEFT+x+1] = allianceColor;
@@ -307,7 +309,7 @@ void climb() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[x+1] = leds[x+2] = leds[NUM_LEDS_FRONT_LEFT+x+3] = leds[NUM_LEDS_FRONT_LEFT+x+4] = leds[NUM_LEDS_FRONT_LEFT+x+5] = CRGB::Black;
     leds[x+3] = leds[NUM_LEDS_FRONT_LEFT+x] = allianceColor;
     leds[x+4] = leds[NUM_LEDS_FRONT_LEFT+x+1] = notBlindingWhite;
@@ -315,7 +317,7 @@ void climb() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[x+1] = leds[NUM_LEDS_FRONT_LEFT+x+3] = leds[NUM_LEDS_FRONT_LEFT+x+4] = CRGB::Black;
     leds[x+2] = leds[NUM_LEDS_FRONT_LEFT+x+5] = allianceColor;
     leds[x+3] = leds[NUM_LEDS_FRONT_LEFT+x] = notBlindingWhite;
@@ -324,7 +326,7 @@ void climb() {
   }
   FastLED.show();
   delay(lightSpeed);
-  for (int x=0; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
+  for (int x=START_LED; x<NUM_LEDS_FRONT_LEFT-6; x+=6) {
     leds[x] = leds[NUM_LEDS_FRONT_LEFT+x+3] = CRGB::Black;
     leds[x+1] = leds[NUM_LEDS_FRONT_LEFT+x+4] = allianceColor;
     leds[x+2] = leds[NUM_LEDS_FRONT_LEFT+x+5] = notBlindingWhite;
@@ -387,8 +389,10 @@ void pulse(int startLed, int numLeds, CRGB color, int pulseSpeed) {
 }
 
 void loop() {
+  Serial.print("nyah1");
   switch (mode) {
     case TELEOP_DISABLED:
+      Serial.print("nyah2");
       teleopDisabled();
       break;
     case TELEOP_ENABLED:
@@ -424,4 +428,40 @@ void loop() {
     default:
       disconnected();
   }
+      
+      /*for (int x=175;x<NUM_LEDS-7;x+=3) {
+        if (z==1) {
+        leds[x] = CRGB(255,0,255);
+        leds[x+1] = CRGB::Red;
+        leds[x+2] = CRGB::Green;
+        }
+        else if (z==2){
+          leds[x] = CRGB::Red;
+          leds[x+1] = CRGB::Green;
+          leds[x+2] = CRGB(255,0,255);
+        }
+        else {
+          leds[x] = CRGB::Green;
+          leds[x+1] = CRGB(255,0,255);
+          leds[x+2] = CRGB::Red;
+        }
+        leds[295]=CRGB::Black;
+  }
+  if (z==1) z = 2;
+  else if (z==2) z = 3;
+  else z = 1;
+  
+        FastLED.show();
+        delay(125);*/
+        
+        /*for (int x=200; x<NUM_LEDS; x++) {
+    leds[x] = CRGB::Red;
+  }
+  FastLED.show();
+  delay(500);
+  for (int x=200; x<NUM_LEDS; x++) {
+    leds[x] = CRGB(255,64,0);
+  }
+  FastLED.show();
+  delay(500);*/
 }
