@@ -1,16 +1,16 @@
 //lights setup
 #include <FastLED.h>
-#define START_LED 133
+#define START_LED 147
 #define NUM_LEDS 239
 #define DATA_PIN 12
 #define CLOCK_PIN 11
 #define NUM_LEDS_FRONT_LEFT 28
 #define NUM_LEDS_FRONT_RIGHT 28
-#define NUM_LEDS_DRIVE 50
+#define NUM_LEDS_DRIVE 36
 #define CHIPSET APA102
-#define BRIGHTNESS 12 //change back to 50 later
+#define BRIGHTNESS 50
 CRGB leds[NUM_LEDS];
-CRGB allianceColor = CRGB::Red;
+CRGB allianceColor = CRGB::Blue;
 CRGB notBlindingWhite = CRGB(128,128,128);
 
 //robot states
@@ -27,7 +27,7 @@ CRGB notBlindingWhite = CRGB(128,128,128);
 #define CLIMB 11
 
 //test settings
-byte mode = SEARCH_LIFT;
+byte mode = CLIMB;
 int z = 1;
 
 void setup() {
@@ -399,9 +399,7 @@ void searchLift() {
     }
     else {
       blue-=5;
-    } 
-  if (blue==255) ascending = false;
-  if (blue==0) ascending = true;
+    }
     }
     else {
       if (ascending==true) {
@@ -410,11 +408,15 @@ void searchLift() {
     else {
       red-=5;
     }
-  if (red==255) ascending = false;
-  if (red==0) ascending = true;
     }
-  if (red==255) ascending = false;
-  if (red==0) ascending = true;
+    if (allianceColor == CRGB(0,0,255)) {
+      if (blue==255) ascending = false;
+      if (blue==0) ascending = true;
+    }
+    else {
+      if (red==255) ascending = false;
+      if (red==0) ascending = true;
+    }
   for (int x=NUM_LEDS-NUM_LEDS_DRIVE; x<NUM_LEDS; x++) {
     leds[x] = CRGB(red, green, blue);
   }
