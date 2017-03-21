@@ -1,5 +1,6 @@
 //lights setup
 #include <FastLED.h>
+#include <Wire.h>
 #define START_LED 138
 #define NUM_LEDS 244
 #define DATA_PIN 12
@@ -33,8 +34,22 @@ int z = 1;
 void setup() {
   FastLED.addLeds<CHIPSET, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
+  Wire.begin(4);
+  Wire.onReceive(receiveEvent);
+  Serial.begin(9600);
 }
-
+void receiveEvent(int howMany){
+  while(Wire.available()){
+    byte b = Wire.read();
+    if(b==0xFF){
+      byte isAllianceRed = Wire.read();
+      allianceColor = (isAllianceRed==1) ? CRGB::Red : CRGB::Blue;
+      byte m = Wire.read();
+      mode = m;
+      byte hasGear = Wire.read();
+    }
+  }
+}
 void teleopDisabled() {
   //STILL
   
