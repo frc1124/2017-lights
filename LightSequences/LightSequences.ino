@@ -1,9 +1,6 @@
 //lights setup
 #include <FastLED.h>
 #include <Wire.h>
-#define START_LED 138
-#define NUM_LEDS 244
-=======
 #define START_LED 147
 #define NUM_LEDS 239
 #define DATA_PIN 12
